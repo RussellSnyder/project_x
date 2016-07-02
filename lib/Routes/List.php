@@ -26,11 +26,12 @@ class Routes_List extends Routing_Route {
 
     function handle(Request $request, Response $response) {
         $orders = $this->orderLoader->loadModelsByLimit(25);
+        $orderPositions = $this->orderPositionsLoader->loadModelsByLimit(25);
         
         $renderJob = new Templating_RenderJob('list', [
             'headline' => 'Orders',
             'orders' => $orders,
-            'sum_of_orders' => count($orders)
+            'orderPositions' => $orderPositions
         ]);
         
         $response->setRenderJob($renderJob);

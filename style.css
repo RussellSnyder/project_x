@@ -1,3 +1,9 @@
 /*
 please style me... :(
 */
+
+#AddOrderPosition_ForThisID_Form {
+	display: none;
+	height: 0;
+	width: 0;
+} 

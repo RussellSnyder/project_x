@@ -33,4 +33,12 @@
         function getQuantity() {
             return $this->data['quantity'];
         }
+
+        /**
+         * @return Integer
+         */
+        function getSum() {
+            return $this->data['quantity'] * $this->data['articlePrice'];
+        }
+
     }

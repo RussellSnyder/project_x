@@ -1,6 +1,6 @@
 <?php
 
-class Routes_OrderDetails extends Routing_Route {
+class Routes_AddOrderPosition extends Routing_Route {
 
     /**
      * @var Data_ModelLoader_Orders
@@ -22,15 +22,33 @@ class Routes_OrderDetails extends Routing_Route {
 
         $this->orderLoader = new Data_ModelLoader_Orders($db);
         $this->orderPositionsLoader = new Data_ModelLoader_OrderPositions($db);
+
+
     }
 
+    function addData($model) {
+        // $this->orderPositionsLoader->setModel($model);
+    }
+
+    function prepareFormData() {
+    	$id = $_POST['id'];
+    	$name = $_POST['name'];
+    	$price = $_POST['price'];
+    	$quantity = $_POST['quantity'];
+    	return array($name, $price, $quantity, $id);
+    }
+
+
     function handle(Request $request, Response $response) {
-        $orderToGet = $_GET['id'];
-        $orderPositions = $this->orderPositionsLoader->loadPositionsByOrderId($orderToGet);
+		$addMe = $this->prepareFormData();
+		$this->addData($addMe);
         // $orderPositions = $this->orderPositionsLoader->loadPositionsByOrderId(1);
-        $renderJob = new Templating_RenderJob('orderdetails', [
-            'orderPositions' => $orderPositions
-            ]);
+        $renderJob = new Templating_RenderJob('addorderposition', [
+	    	'name' => $addMe[0],
+	    	'price' => $addMe[1],
+	    	'quantity' => $addMe[2],
+	    	'id' => $addMe[3]
+        ]);
         
         $response->setRenderJob($renderJob);
     }

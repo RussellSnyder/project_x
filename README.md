@@ -22,7 +22,10 @@ Your solution should not expose any security holes and every input a user does s
 * Add the order sum to the order list
 
 * Add a `details` button to the order list which links to a detail page showing all order positions
+
 * Add the possibility to add more order positions on the order detail page
+
+
 * Make the list and the positions page look beautiful
 * Make sure that when calling the '/' route the list is shown
 * Do you have some ideas on how clientside scripting (JavaScript) could be incorporated to improve the user's experience?
