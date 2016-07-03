@@ -16,7 +16,7 @@
         <td><?= $order->getId(); ?></td> 
         <td><?= $order->getCustomerName(); ?></td>
         <td><?= $order->getDate()->format('d.m.y, H:i'); ?></td>
-        <td>SUm goes here</td>
+        <td><?= $sums[$order->getId() - 1] ?></td>
         <td>
             <a href='
             <?= "orderdetails.html?id=" . $order->getId(); ?>

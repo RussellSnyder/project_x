@@ -7,3 +7,11 @@ please style me... :(
 	height: 0;
 	width: 0;
 } 
+
+.total {
+	background: #33dd33;
+	color: #111111;
+	font-weight: 600;
+	font-size: 1.1em;
+
+}

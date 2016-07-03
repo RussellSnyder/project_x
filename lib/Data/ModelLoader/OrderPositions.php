@@ -17,5 +17,18 @@
             return $this->load(new Data_ResultQuery(['orderId' => $orderId]), new Data_ResultOrder('id', Data_ResultOrder::ASC));
         }
 
+        /**
+         * takes a order id and returns the sum of the order
+         *
+         * @param $orderId
+         *
+         * @return Data_Models_OrderPosition[]
+         */
+        // function loadOrderSum($orderId) {
+        //     return $this->load(new Data_ResultQuery(['orderId' => $orderId]), new Data_ResultOrder('id', Data_ResultOrder::ASC),
+        //         new Data_ResultLimit(10000),
+        //         new Data_ResultGroupby($orderId));
+        // }
+
 
     }

@@ -44,20 +44,24 @@
          * @return Data_Model[]
          * @throws Exceptions_ModelLoaderException
          */
-        function load(Data_ResultQuery $resultQuery, Data_ResultOrder $resultOrder = null, Data_ResultLimit $resultLimit = null) {
+        function load(Data_ResultQuery $resultQuery, Data_ResultOrder $resultOrder = null, Data_ResultLimit $resultLimit = null, Data_ResultGroupby $resultGroupby = null) {
             if (!($resultOrder instanceof Data_ResultOrder)) {
                 $resultOrder = Data_ResultOrder::createDefault();
             }
             if (!($resultLimit instanceof Data_ResultLimit)) {
                 $resultLimit = Data_ResultLimit::createDefault();
             }
+            if (!($resultGroupby instanceof Data_ResultGroupby)) {
+                $resultGroupby = Data_ResultGroupby::createDefault();
+            }
 
-            return $this->loadModelsByKeys($this->db->getScalarArray('SELECT %s FROM %s %s %s %s', [
+            return $this->loadModelsByKeys($this->db->getScalarArray('SELECT %s FROM %s %s %s %s %s', [
                 $this->getSelectionField(),
                 $this->getTableName(),
                 $resultQuery->buildStatementFragment(),
                 $resultOrder->buildStatementFragment(),
-                $resultLimit->buildStatementFragment()
+                $resultLimit->buildStatementFragment(),
+                $resultGroupby->buildStatementFragment()
             ]));
         }
 

@@ -36,16 +36,17 @@ class Routes_Test extends Routing_Route {
     function handle(Request $request, Response $response) {
         $orders = $this->orderLoader->loadModelsByLimit(25);
         $orderPositions = $this->orderPositionsLoader->loadModelsByLimit(25);
-        $test = $this->orderPositionsLoader->loadPositionsByOrderId(1);
-        $testSum = $this->getWholeSum($test);
+        $position1 = $this->orderPositionsLoader->loadPositionsByOrderId(1);
+        $position2 = $this->orderPositionsLoader->loadPositionsByOrderId(2);
+        $position3 = $this->orderPositionsLoader->loadPositionsByOrderId(3);
+        $sums = array($this->getWholeSum($position1), $this->getWholeSum($position2), $this->getWholeSum($position3));
         // $orderPositions = $this->orderPositionsLoader->loadPositionsByOrderId(1);
         $renderJob = new Templating_RenderJob('test', [
             'headline1' => 'Orders Table',
             'orders' => $orders,
             'headline2' => 'OrderPositions Table',
             'orderPositions' => $orderPositions,
-            'test' => $test,
-            'testSum' => $testSum
+            'sums' => $sums
             ]);
         
         $response->setRenderJob($renderJob);

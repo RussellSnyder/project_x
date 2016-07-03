@@ -3,11 +3,6 @@
 class Routes_AddOrderPosition extends Routing_Route {
 
     /**
-     * @var Data_ModelLoader_Orders
-     */
-    private $orderLoader;
-
-    /**
      * @var Data_ModelLoader_OrderPositions
      */
     private $orderPositionsLoader;
@@ -20,7 +15,6 @@ class Routes_AddOrderPosition extends Routing_Route {
     function __construct(DB $db) {
         parent::__construct($db);
 
-        $this->orderLoader = new Data_ModelLoader_Orders($db);
         $this->orderPositionsLoader = new Data_ModelLoader_OrderPositions($db);
 
 
@@ -30,13 +24,21 @@ class Routes_AddOrderPosition extends Routing_Route {
         // $this->orderPositionsLoader->setModel($model);
     }
 
+    private function test_input($data) {
+      $data = trim($data);
+      $data = stripslashes($data);
+      $data = htmlspecialchars($data);
+      return $data;
+    }
+
     function prepareFormData() {
-    	$id = $_POST['id'];
-    	$name = $_POST['name'];
-    	$price = $_POST['price'];
-    	$quantity = $_POST['quantity'];
+    	$id = $this->test_input($_POST['id']);
+    	$name = $this->test_input($_POST['name']);
+    	$price = $this->test_input($_POST['price']);
+    	$quantity = $this->test_input($_POST['quantity']);
     	return array($name, $price, $quantity, $id);
     }
+
 
 
     function handle(Request $request, Response $response) {

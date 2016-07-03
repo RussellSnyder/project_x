@@ -21,6 +21,11 @@
             echo money_format('%.2n',$order_sum) ?> </td> 
     </tr>
 <?php } ?>
+    <tr>
+        <td colspan="4"></td>
+        <td><b>Grand Total:</b></td>
+        <td class="total"><?= $grandTotal ?></td>
+    </tr>
 </tbody>
 </table>
 <div class="col-sm-10 col-sm-offset-1">
