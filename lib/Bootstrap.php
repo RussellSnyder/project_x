@@ -1,7 +1,7 @@
 <?php
 
 class Bootstrap {
-    static function initiate() {
+    static function initiate($baseTemplate) {
         $db = new Db('data.sqlite3');
 
         $renderer = new Templating_Renderer(getcwd() . '/Templates');
@@ -12,7 +12,7 @@ class Bootstrap {
 
         $route->handle($request, $response);
 
-        echo $renderer->render(new Templating_RenderJob('base', [
+        echo $renderer->render(new Templating_RenderJob($baseTemplate, [
             'routeOutput' => $response->output()
         ]));
     }

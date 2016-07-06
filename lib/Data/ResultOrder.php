@@ -8,7 +8,7 @@
         protected $orderDirection;
 
         static function createDefault() {
-            return new Data_ResultOrder();
+            return new Data_ResultOrder(null);
         }
 
         function __construct($orderField = null, $orderDirection = self::DESC) {
@@ -38,4 +38,5 @@
             }
             return vsprintf('ORDER BY %s %s', [$this->orderField, $this->orderDirection]);
         }
+        
     }

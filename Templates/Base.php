@@ -29,7 +29,7 @@
 			            <ul class="nav navbar-nav">
 			              <li class=""><a href="list.html">list</a></li>
   						  <li><a href="#" data-toggle="modal" data-target="#notesModal">notes</a></li>
-  						  <li><a href="static/test.htm">staic page</a></li>
+  						  <li><a href="static/test.htm">static page example</a></li>
 
 			            </ul>
 			          </div><!--/.nav-collapse -->
@@ -39,9 +39,7 @@
 		</div>
 		<div class="container">
 
-			<div class="col-md-10 col-md-offset-1">			
 		        <?= $routeOutput; ?>
-			</div>
 			<!-- Modal -->
 			<div class="modal fade" id="notesModal" role="dialog">
 				<div class="modal-dialog">
@@ -50,24 +48,10 @@
 					<div class="modal-content">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Russell's Notes</h4>
+							<h4 class="modal-title">Usage Notes</h4>
 						</div>
 						<div class="modal-body">
-							<p>JQuery is used on buttons and forms to reduce overall clutter and help the user focus on the information at hand.</p>
- 							<p>Plain strings will be output if you enter <b>string:</b> at the start of the url</p>
- 							<p>Static files can be used and by putting files into the static folder and using a '.htm' suffix on file names</p>
-
-
-#### advanced specific assignment
-
-* If the list has more than X entries it gets somewhat confusing, add the possibility to page through the list.
-* Add the possibility to specify a sorting order in the orders list
-
-### general assignment
-
-* Enhance the project X Framework so that plain strings can be returned by a arbitrary route
-* Enhance the project X Framework to also accept htm files as routing directives
-* Enhance the project X Framework to be able to show only the route's content without a base template</p>
+							<?php include('usage_notes.php') ?>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

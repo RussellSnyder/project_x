@@ -5,12 +5,13 @@ error_reporting(~0);
 
 require_once('_autoload.php');
 
-// if (preg_match('/\/nobase/+?[a-zA-Z0-9]\.(html)/', $_SERVER["REQUEST_URI"])) {
-// 	header('Location: '. '/static/test.htm');
-// } 
-// else 
-	if (preg_match('/\.(html)/', $_SERVER["REQUEST_URI"])) {
-    Bootstrap::initiate();
+if (preg_match('/\.(html)\.(raw)/', $_SERVER["REQUEST_URI"])) 
+{
+    Bootstrap::initiate('nobase');
+} 
+else if (preg_match('/\.(html)/', $_SERVER["REQUEST_URI"])) 
+{
+    Bootstrap::initiate('base');
 } 
 else if(preg_match('/\/$/', $_SERVER["REQUEST_URI"])) 
 {

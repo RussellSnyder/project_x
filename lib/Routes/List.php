@@ -11,7 +11,16 @@ class Routes_List extends Routing_Route {
      * @var Data_ModelLoader_OrderPositions
      */
     private $orderPositionsLoader;
+
     
+    /**
+     * @
+     */
+    private $numTotalResults = 25;
+    private $resultsPerPage = 3;
+
+    private $orderResults;
+
     /**
      * Routes_List constructor.
      *
@@ -22,6 +31,14 @@ class Routes_List extends Routing_Route {
 
         $this->orderLoader = new Data_ModelLoader_Orders($db);
         $this->orderPositionsLoader = new Data_ModelLoader_OrderPositions($db);
+
+        $this->orderResults = new Data_ResultOrder();
+        $this->orderResults->setOrderDirection('ASC');
+        $this->orderResults->setOrderField('customer');
+
+
+        $this->getAndSetSortParams('resultsperpage');
+
     }
 
     function getWholeSum($orderPositions) {
@@ -33,12 +50,56 @@ class Routes_List extends Routing_Route {
         return $total_sum;
     }
 
+    function offsetHelper($numberOfEntriePerPage) {
+        $uri = $_SERVER["REQUEST_URI"];
+        $pageMatch = '/\?page=(\d)/';
+        preg_match($pageMatch, $uri, $offset);
+        if (!empty($offset)) {
+            return substr($offset[0], 6) - 1;
+        } else {
+            return 0;
+        }
+    }
+
+    function getAndSetSortParams($param) {
+        if( $param == "resultsperpage" && isset($_GET["resultsperpage"]))
+        {
+            $this->resultsPerPage = $_GET["resultsperpage"];
+            return $this->resultsPerPage;
+        } else {
+            return $this->resultsPerPage;
+        }
+    }
+
+    function numberOfPages() {
+        $numPerPage = intval($this->getAndSetSortParams('resultsPerPage'));
+        $totalNumOrders = count($this->orderLoader->loadModelsByLimit($this->numTotalResults));
+        $result = round($totalNumOrders / $numPerPage);
+        return $result;
+    }
+
+
     function handle(Request $request, Response $response) {
-        $orders = $this->orderLoader->loadModelsByLimit(25);
-        $orderPositions = $this->orderPositionsLoader->loadModelsByLimit(25);
+        $numberOfPages = $this->numberOfPages();
+        $numberOfResults = count($this->orderLoader->loadModelsByLimit($this->numTotalResults));
+        $resultsPerPage = $this->getAndSetSortParams('resultsperpage');
+        $offset = $this->offsetHelper(1);
+        // $_orders = $this->orderLoader->loadModelsByLimit($resultsPerPage, $offset);
+
+
+        $orders = $this->orderLoader->load(
+            Data_ResultQuery::createDefault(), 
+            Data_ResultOrder::createDefault(), 
+            new Data_ResultLimit($resultsPerPage, $offset)
+        );
+
+        $orderPositions = $this->orderPositionsLoader->loadModelsByLimit($this->numTotalResults);
+        //This needs to be put in a loop so when more are added
+        //it is auto generated
         $position1 = $this->orderPositionsLoader->loadPositionsByOrderId(1);
         $position2 = $this->orderPositionsLoader->loadPositionsByOrderId(2);
         $position3 = $this->orderPositionsLoader->loadPositionsByOrderId(3);
+        //
         $sums = array($this->getWholeSum($position1), $this->getWholeSum($position2), $this->getWholeSum($position3));
 
         $renderJob = new Templating_RenderJob('list', [
@@ -46,7 +107,10 @@ class Routes_List extends Routing_Route {
             'orders' => $orders,
             'headline2' => 'Order Positions',
             'orderPositions' => $orderPositions,
-            'sums' => $sums
+            'sums' => $sums,
+            'numberOfPages' => $numberOfPages,
+            'offset' => $offset,
+            'numberOfResults' => $numberOfResults
         ]);
         
         $response->setRenderJob($renderJob);

@@ -19,3 +19,9 @@ please style me... :(
 	font-size: 1.1em;
 
 }
+
+.center-block {  
+  display: block;  
+  margin-right: auto;  
+  margin-left: auto;  
+} 
