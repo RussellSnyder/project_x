@@ -1,12 +1,22 @@
 
 
-// orderdetail page
-$('#AddOrderPosition_ForThisID_Button').click(function() {
-    $('#AddOrderPosition_ForThisID_Form').show().fadeIn().animate({
+// show button
+$('.show_button').click(function() {
+    $('.show_container').show().fadeIn().animate({
         height: '100%',
         width: '100%',
     });
+    $('.show_button').hide();
+    $('.close_button').show();
+});
 
+$('.close_button').click(function() {
+    $('.show_container').fadeOut().animate({
+        height: '0%',
+        width: '0%',
+    });
+    $('.close_button').hide();
+    $('.show_button').show();
 });
 
 // Fade in new Order when order is placed:

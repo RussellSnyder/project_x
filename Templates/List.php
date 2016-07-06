@@ -29,7 +29,20 @@
 
 </tbody>
 </table>
+
+<a class="btn btn-sm btn-primary show_button" >
+    Show All Order Positions
+    <i class="fa fa-arrow-circle-down"></i>
+</a>
+<a class="btn btn-sm btn-warning close_button" ><i class="fa fa-minus"></i>
+ Hide Order Positions
+</a>
+
+<div class="show_container">
     
+<h2><?= $headline2; ?></h2>
+
+
 <table class="table table-striped">
 <thead>
   <tr>
@@ -53,3 +66,4 @@
 
 </tbody>
 </table>
+</div>    

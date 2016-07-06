@@ -44,6 +44,7 @@ class Routes_List extends Routing_Route {
         $renderJob = new Templating_RenderJob('list', [
             'headline' => 'Orders',
             'orders' => $orders,
+            'headline2' => 'Order Positions',
             'orderPositions' => $orderPositions,
             'sums' => $sums
         ]);

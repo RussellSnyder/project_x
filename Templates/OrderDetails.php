@@ -29,9 +29,14 @@
 </tbody>
 </table>
 <div class="col-sm-10 col-sm-offset-1">
-<a class="btn btn-sm btn-primary" id="AddOrderPosition_ForThisID_Button">Add a new Order to this OrderID</a>
+<a class="btn btn-sm btn-primary show_button" ><i class="fa fa-plus"></i>  
+  to this OrderID
+</a>
+<a class="btn btn-sm btn-warning close_button" ><i class="fa fa-minus"></i>
+ Hide Form
+</a>
 <br><br>
-<form class="form-horizontal" action="AddOrderPosition.html" id="AddOrderPosition_ForThisID_Form" method="post">
+<form class="form-horizontal show_container" action="AddOrderPosition.html" id="AddOrderPosition_ForThisID_Form" method="post">
   <input type="hidden" name="id" value="<?= $order_position->getOrderId(); ?>">
   <div class="form-group">
     <label class="control-label col-sm-2" for="name">Name:</label>

@@ -2,11 +2,15 @@
 please style me... :(
 */
 
-#AddOrderPosition_ForThisID_Form {
+.show_container {
 	display: none;
 	height: 0;
 	width: 0;
 } 
+
+.close_button {
+	display: none;
+}
 
 .total {
 	background: #33dd33;
