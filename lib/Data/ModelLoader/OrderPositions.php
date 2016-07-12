@@ -30,5 +30,21 @@
         //         new Data_ResultGroupby($orderId));
         // }
 
+        function addOrderPosition($itemsArray) {
+
+            $myDB = new PDO('sqlite:data.sqlite3');
+
+            $query = $myDB->prepare(
+                'INSERT INTO orderPositions (id, orderId, articleName, articlePrice, quantity) VALUES (?, ?, ?, ?, ?)');
+            $query->execute($itemsArray);
+
+
+            // $query = "INSERT INTO %s (%s, %s, %s, %s, %s) VALUES (%i, %i, %s, %i, %i)";
+            // $argumentArray = array($this->getTableName(), $this->getFields(), implode(",",$itemsArray));
+            // $insert = $this->db->query($query, $argumentArray);
+            // $insert->execute();
+
+        }
+
 
     }

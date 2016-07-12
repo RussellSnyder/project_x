@@ -6,7 +6,16 @@ class Routes_AddOrderPosition extends Routing_Route {
      * @var Data_ModelLoader_OrderPositions
      */
     private $orderPositionsLoader;
+
+    /**
+     * @var Utilities_SantizeData
+     */
+    private $sanitizeData;
     
+
+    // current order id being viewed
+    private $orderId;
+
     /**
      * Routes_List constructor.
      *
@@ -17,41 +26,34 @@ class Routes_AddOrderPosition extends Routing_Route {
 
         $this->orderPositionsLoader = new Data_ModelLoader_OrderPositions($db);
 
+        $this->sanitizeData = new Utilities_SanitizeData();
 
-    }
+        $this->orderId = $this->sanitizeData->positiveNumber(
+                          $this->sanitizeData->basic($_POST['orderId']));
 
-    function addData($model) {
-        // $this->orderPositionsLoader->setModel($model);
-    }
 
-    private function test_input($data) {
-      $data = trim($data);
-      $data = stripslashes($data);
-      $data = htmlspecialchars($data);
-      return $data;
+
     }
 
     function prepareFormData() {
-    	$id = $this->test_input($_POST['id']);
-    	$name = $this->test_input($_POST['name']);
-    	$price = $this->test_input($_POST['price']);
-    	$quantity = $this->test_input($_POST['quantity']);
-    	return array($name, $price, $quantity, $id);
+      $name = $this->sanitizeData->basic($_POST['name']);
+      $name = $this->sanitizeData->string($name);
+      $price = $this->sanitizeData->basic($_POST['price']);
+      $price = $this->sanitizeData->positiveNumber($price);      
+      $quantity = $this->sanitizeData->basic($_POST['quantity']);
+      $quantity = $this->sanitizeData->positiveNumber($quantity);
+      return array( NULL, $this->orderId, $name, $price, $quantity );
     }
 
 
+    function addData($model) {
+        $this->orderPositionsLoader->addOrderPosition($model);
+    }
 
     function handle(Request $request, Response $response) {
 		$addMe = $this->prepareFormData();
 		$this->addData($addMe);
-        // $orderPositions = $this->orderPositionsLoader->loadPositionsByOrderId(1);
-        $renderJob = new Templating_RenderJob('addorderposition', [
-	    	'name' => $addMe[0],
-	    	'price' => $addMe[1],
-	    	'quantity' => $addMe[2],
-	    	'id' => $addMe[3]
-        ]);
-        
-        $response->setRenderJob($renderJob);
+    $id = $_POST['orderId'];
+    header('Location: '. '/orderdetails.html?id=' . $id);
     }
 }

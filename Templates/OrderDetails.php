@@ -6,7 +6,7 @@
     <th>Article Name</th>
     <th>Article Price</th>
     <th>Article Quantity</th>
-    <th>Price * Quantity</th>
+    <th>Sum</th>
   </tr>
 </thead>
 <tbody>
@@ -17,8 +17,7 @@
         <td><?= $order_position->getArticleName(); ?> </td> 
         <td><?= $order_position->getArticlePrice(); ?> </td> 
         <td><?= $order_position->getQuantity(); ?> </td> 
-        <td><? $order_sum = $order_position->getSum();
-            echo money_format('%.2n',$order_sum) ?> </td> 
+        <td><?= $order_position->getSum(); ?> </td> 
     </tr>
 <?php } ?>
     <tr>
@@ -37,7 +36,7 @@
 </a>
 <br><br>
 <form class="form-horizontal show_container" action="AddOrderPosition.html" id="AddOrderPosition_ForThisID_Form" method="post">
-  <input type="hidden" name="id" value="<?= $order_position->getOrderId(); ?>">
+  <input type="hidden" name="orderId" value="<?= $order_position->getOrderId(); ?>">
   <div class="form-group">
     <label class="control-label col-sm-2" for="name">Name:</label>
     <div class="col-sm-10">

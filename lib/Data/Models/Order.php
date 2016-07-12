@@ -9,6 +9,7 @@
          * @return DateTime
          */
         function getDate() {
-            return new DateTime($this->data['date'], new DateTimeZone('Europe/London'));
+            $preFormatted = new DateTime($this->data['date'], new DateTimeZone('Europe/London'));
+            return $preFormatted->format('d.m.y, H:i');
         }
     }

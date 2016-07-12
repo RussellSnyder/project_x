@@ -38,7 +38,9 @@
          * @return Integer
          */
         function getSum() {
-            return $this->data['quantity'] * $this->data['articlePrice'];
+            $order_sum = $this->data['quantity'] * $this->data['articlePrice']; 
+            return money_format('%.2n', $order_sum);
+            // return $order_sum;
         }
 
     }

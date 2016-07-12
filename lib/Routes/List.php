@@ -7,20 +7,26 @@ class Routes_List extends Routing_Route {
      */
     private $orderLoader;
 
+    private $ordersPagination;    
+    private $ordersTotal;
+    private $orderResults;
+    private $ordersSort;
+
     /**
      * @var Data_ModelLoader_OrderPositions
      */
     private $orderPositionsLoader;
 
-    
+    private $orderPositionsPagination;    
+    private $orderPositionsTotal;
+    private $orderPositionsResults;
+    private $orderPositionsSort;
+
     /**
-     * @
+     * @var array of Sum of Data_ModelLoader_OrderPositions on given id;
+     * id ==> sum
      */
-    private $numTotalResults = 25;
-    private $resultsPerPage = 3;
-
-    private $orderResults;
-
+    private $orderSums = [];
     /**
      * Routes_List constructor.
      *
@@ -29,88 +35,116 @@ class Routes_List extends Routing_Route {
     function __construct(DB $db) {
         parent::__construct($db);
 
+        // ORDERS
         $this->orderLoader = new Data_ModelLoader_Orders($db);
+        $this->ordersTotal = $this->orderLoader->count();
+        $this->ordersPagination = new Utilities_Pagination(['page', 'orders', 3], $this->ordersTotal); 
+        $this->ordersSort = new Utilities_Sort('orders');
+
+        // ORDERPOSITIONS
         $this->orderPositionsLoader = new Data_ModelLoader_OrderPositions($db);
-
-        $this->orderResults = new Data_ResultOrder();
-        $this->orderResults->setOrderDirection('ASC');
-        $this->orderResults->setOrderField('customer');
-
-
-        $this->getAndSetSortParams('resultsperpage');
+        $this->orderPositionsTotal = $this->orderPositionsLoader->count();
+        $this->orderPositionsPagination = new Utilities_Pagination(['page', 'orderPositions', 5], $this->orderPositionsTotal); 
+        $this->orderPositionsSort = new Utilities_Sort('orderPositions');
 
     }
 
-    function getWholeSum($orderPositions) {
+
+    private function getWholeSum($orderPositions) {
         $total_sum = 0;         
         foreach($orderPositions as $order_position) {
             $one_sum = $order_position->getSum();
             $total_sum = $total_sum + $one_sum; 
         }
-        return $total_sum;
+        return money_format('%.2n', $total_sum);
     }
 
-    function offsetHelper($numberOfEntriePerPage) {
-        $uri = $_SERVER["REQUEST_URI"];
-        $pageMatch = '/\?page=(\d)/';
-        preg_match($pageMatch, $uri, $offset);
-        if (!empty($offset)) {
-            return substr($offset[0], 6) - 1;
-        } else {
-            return 0;
+    private function getOrderSums($orders) {
+        $sumsArray = [];
+        foreach ($orders as $order) {
+            $id = $order->getId();
+            $order = $this->orderPositionsLoader->loadPositionsByOrderId($id);
+            $sum = $this->getWholeSum($order);
+            $this->sumsArray[$id] = $sum;
         }
+        return $this->sumsArray;
     }
-
-    function getAndSetSortParams($param) {
-        if( $param == "resultsperpage" && isset($_GET["resultsperpage"]))
-        {
-            $this->resultsPerPage = $_GET["resultsperpage"];
-            return $this->resultsPerPage;
-        } else {
-            return $this->resultsPerPage;
-        }
-    }
-
-    function numberOfPages() {
-        $numPerPage = intval($this->getAndSetSortParams('resultsPerPage'));
-        $totalNumOrders = count($this->orderLoader->loadModelsByLimit($this->numTotalResults));
-        $result = round($totalNumOrders / $numPerPage);
-        return $result;
-    }
-
 
     function handle(Request $request, Response $response) {
-        $numberOfPages = $this->numberOfPages();
-        $numberOfResults = count($this->orderLoader->loadModelsByLimit($this->numTotalResults));
-        $resultsPerPage = $this->getAndSetSortParams('resultsperpage');
-        $offset = $this->offsetHelper(1);
-        // $_orders = $this->orderLoader->loadModelsByLimit($resultsPerPage, $offset);
 
+        //ORDERS START
+        $ordersResultsPerPage = $this->ordersPagination->getNumberOfResultsPerPage(3);
+        $ordersOffset = $this->ordersPagination->calulateOffset(1);
 
-        $orders = $this->orderLoader->load(
-            Data_ResultQuery::createDefault(), 
-            Data_ResultOrder::createDefault(), 
-            new Data_ResultLimit($resultsPerPage, $offset)
-        );
+        $ordersNumberOfResultsPerPageDropdown = $this->ordersPagination->createDropdown('Number Of Results Per Page', $this->ordersTotal);
+ 
+        $ordersPagination = $this->ordersPagination->createPagination();
 
-        $orderPositions = $this->orderPositionsLoader->loadModelsByLimit($this->numTotalResults);
-        //This needs to be put in a loop so when more are added
-        //it is auto generated
-        $position1 = $this->orderPositionsLoader->loadPositionsByOrderId(1);
-        $position2 = $this->orderPositionsLoader->loadPositionsByOrderId(2);
-        $position3 = $this->orderPositionsLoader->loadPositionsByOrderId(3);
-        //
-        $sums = array($this->getWholeSum($position1), $this->getWholeSum($position2), $this->getWholeSum($position3));
+        $ordersSortOrderDropdown = $this->ordersSort->createDropdown('Display Results', 'orderdirection', ['ASC', 'DESC']);
+
+        $ordersSortByDropdown = $this->ordersSort->createDropdown('Order Results By', 'orderby', ['id', 'customer', 'date', 'sum']);
+
+        if ($this->ordersSort->getValue('ordersorderdirection') == 'ASC') {
+            $orders = $this->orderLoader->load(
+                Data_ResultQuery::createDefault(), 
+                new Data_ResultOrder('id', Data_ResultOrder::ASC), 
+                new Data_ResultLimit($ordersResultsPerPage, $ordersOffset)
+            );            
+        } else if ($this->ordersSort->getValue('ordersorderdirection') == 'DESC') {
+            $orders = $this->orderLoader->load(
+                Data_ResultQuery::createDefault(), 
+                new Data_ResultOrder('id', Data_ResultOrder::DESC), 
+                new Data_ResultLimit($ordersResultsPerPage, $ordersOffset)
+            );            
+        } 
+
+        //ORDERS END
+
+        //ORDERPOSITIONS START
+        $orderPositionsResultsPerPage = $this->orderPositionsPagination->getNumberOfResultsPerPage();
+        $orderPositionsOffset = $this->orderPositionsPagination->calulateOffset(1);
+
+        $orderPositionsNumberOfResultsPerPageDropdown = $this->orderPositionsPagination->createDropdown('Number Of Results Per Page', $this->orderPositionsTotal);
+ 
+        $orderPositionsPagination = $this->orderPositionsPagination->createPagination();
+
+        $orderPositionsSortOrderDropdown = $this->orderPositionsSort->createDropdown('Display Results', 'orderdirection', ['ASC', 'DESC']);
+
+        $orderPositionsSortByDropdown = $this->orderPositionsSort->createDropdown('Order Results By', 'orderby', ['id', 'orderId', 'articleName', 'articlePrice', 'quantity']);
+
+        if ($this->orderPositionsSort->getValue('orderPositionsorderdirection') == 'ASC') {
+            $orderPositions = $this->orderPositionsLoader->load(
+                Data_ResultQuery::createDefault(), 
+                new Data_ResultOrder('id', Data_ResultOrder::ASC), 
+                new Data_ResultLimit($orderPositionsResultsPerPage, $orderPositionsOffset)
+            );            
+        } else {
+            $orderPositions = $this->orderPositionsLoader->load(
+                Data_ResultQuery::createDefault(), 
+                new Data_ResultOrder('id', Data_ResultOrder::DESC), 
+                new Data_ResultLimit($orderPositionsResultsPerPage, $orderPositionsOffset)
+            );            
+        }  
+
+        // create array of sums
+        $sums = $this->getOrderSums($orders);
 
         $renderJob = new Templating_RenderJob('list', [
             'headline' => 'Orders',
             'orders' => $orders,
+            'ordersTotal' => $this->ordersTotal,
+            'ordersPagination' => $ordersPagination,
+            'ordersNumberOfResultsPerPageDropdown' => $ordersNumberOfResultsPerPageDropdown,
+            'ordersSortOrderDropdown' => $ordersSortOrderDropdown,
+            'ordersSortByDropdown' => $ordersSortByDropdown,
             'headline2' => 'Order Positions',
             'orderPositions' => $orderPositions,
+            'orderPositionsTotal' => $this->orderPositionsTotal,
+            'orderPositionsPagination' => $orderPositionsPagination,
+            'orderPositionsNumberOfResultsPerPageDropdown' => $orderPositionsNumberOfResultsPerPageDropdown,
+            'orderPositionsSortOrderDropdown' => $orderPositionsSortOrderDropdown,
+            'orderPositionsSortByDropdown' => $orderPositionsSortByDropdown,
             'sums' => $sums,
-            'numberOfPages' => $numberOfPages,
-            'offset' => $offset,
-            'numberOfResults' => $numberOfResults
         ]);
         
         $response->setRenderJob($renderJob);
